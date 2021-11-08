@@ -1,0 +1,5 @@
+---
+# vars file for roles/04-deploy-artifact-in-container
+base_dir: /home/sarbajit/.jenkins/workspace
+project_name: ConferenceRoomAppDeploy_S
+sub_dir: roles/04-deploy-artifact-in-container/files

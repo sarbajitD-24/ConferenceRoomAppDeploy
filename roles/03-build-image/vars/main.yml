@@ -1,0 +1,5 @@
+---
+# vars file for roles/03-build-image
+base_dir: /home/sarbajit/.jenkins/workspace
+project_name: ConferenceRoomAppDeploy_S
+sub_dir: roles/03-build-image/files

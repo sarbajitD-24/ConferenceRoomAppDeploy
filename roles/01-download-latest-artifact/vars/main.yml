@@ -1,0 +1,5 @@
+---
+# vars file for roles/01-download-latest-artifact
+base_dir: /home/sarbajit/.jenkins/workspace
+project_name: ConferenceRoomAppDeploy_S
+sub_dir: roles/03-build-image/files
