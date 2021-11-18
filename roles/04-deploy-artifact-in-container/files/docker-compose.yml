@@ -4,4 +4,5 @@ services:
     image: docker-capstone
     ports:
     - '9278:8080'
+    - '9830:9830'
     network_mode: bridge
