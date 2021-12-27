@@ -1,0 +1,32 @@
+1> API Query to get list of target artifacts(.war) in artifactory server & register (save) the output in a variable
+2> save the JSON data to another variable as a Fact (for performing queries on it/filtering)
+3> Print the whole list (the Fact Variable)
+4> JSON Filtering applied to Extract the top most artifact name from the results array from the above mentioned Fact 
+   variable [fact variable data already sorted in descending order making the latest artifact as the first entry] & save 
+   it into a new variable
+5> Now Print the full name of the latest artifact (newly created variable)
+
+
+6> API Query (with the full name of the latest artifact & repository name) to get the target artifact uri response & 
+   register (save) the output in a variable
+7> save the JSON data to another variable as a Fact (for performing queries on it/filtering)
+8> Print the target artifact uri response (the Fact Variable)
+
+*** This response we got actually contains the artifact metadata link
+
+9> JSON Filtering applied to Extract the artifact metadata link from the above mentioned Fact variable (uri response) 
+   & save it into a new variable
+10> Now Print the artifact metadata link (newly created variable)
+
+
+11> API Query (the artifact metadata link) to get the full metadata details & register (save) the output in a variable
+12> save the JSON data to another variable as a Fact (for performing queries on it/filtering)
+
+*** The metadata contains several details like the user who uploaded the war file, update time, md5 checksum value etc.
+
+13> JSON Filtering applied to Extract the value of 'downloadUri' from the metadata & save it into a new variable
+
+*** 'downloadUri' has the full link to the target war file (stored the artifact repo)
+
+14> Print the target artifact full link to D/L (newly created variable)
+15> D/L the target artifact to your intended directory for further operation
