@@ -1,0 +1,16 @@
+items.find(
+    {
+        "name":{"$match":"*.war"},
+        "$or":[
+            {
+                "$and":[
+                    {"repo":{"$eq":"libs-snapshot-local"}}
+                 ]
+            },
+            {
+                "$and":[
+                    {"type":{"$eq":"file"}}
+                 ]
+            }
+          ]
+}).sort({"$desc": ["updated"]})
