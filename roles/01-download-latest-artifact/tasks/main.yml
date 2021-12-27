@@ -1,19 +1,49 @@
 ---
 # tasks file for roles/01-download-latest-artifact
-- name: Get the response from Artifactory API regarding latest artifact
+- name: Get artifact(.war) list present in artifactory server
   uri:
-    url: "http://192.168.56.88:8081/artifactory/api/storage/libs-snapshot-local/com/wipro/ConferenceRoomCapstoneB35/0.0.1-SNAPSHOT/?lastModified"
+    url: "http://192.168.56.88:8081/artifactory/api/search/aql"
+    url_username: admin
+    url_password: Feb@2021
+    method: POST
+    return_content: yes
+    status_code: 200
+    body: "{{ lookup('file','{{ query_dir }}/search_artifact.aql') }}"
+    headers: 
+      Content-Type: text/plain
+      Accept: text/plain
+  register: data
+
+- name: Save the JSON data to a Variable as a Fact
+  set_fact:
+    artifactListResponse: "{{ data.content | from_json }}"
+
+- name: Print the saved json response
+  debug:
+    var: artifactListResponse
+
+- name: check latest artifact name
+  set_fact:
+    latestArtifactName: "{{ artifactListResponse.results[0].name}}"
+
+- name: debug fact
+  debug:
+    msg: "{{ latestArtifactName }}"
+
+- name: Get latest artifact uri response
+  uri:
+    url: "http://192.168.56.88:8081/artifactory/api/search/artifact?name={{ latestArtifactName }}&repos=libs-snapshot-local"
     url_username: admin
     url_password: Feb@2021
     method: GET
     return_content: yes
     status_code: 200
     body_format: json
-  register: data
+  register: artifact_response_data
 
 - name: Save the JSON data to a Variable as a Fact
   set_fact:
-    latestArtifactResponseAPI: "{{ data.content | from_json }}"
+    latestArtifactResponseAPI: "{{ artifact_response_data.content | from_json }}"
 
 - name: Print the saved json response
   debug:
@@ -21,17 +51,15 @@
 
 - name: Extract URI link from JSON file(uri response)regarding artifact details
   set_fact:
-    artifactDetailsLink: "{{ latestArtifactResponseAPI | json_query(jmesquery) }}"
-  vars:
-    jmesquery: 'uri'  
+    latestArtifactMetadataLink: "{{ latestArtifactResponseAPI.results[0].uri}}"
 
 - name: Display Artifact details link
   debug:
-    var: artifactDetailsLink
+    var: latestArtifactMetadataLink
 
 - name: Get the artifact details regarding latest artifact from previously acquired link
   uri:
-    url: "{{ artifactDetailsLink }}"
+    url: "{{ latestArtifactMetadataLink }}"
     url_username: admin
     url_password: Feb@2021
     method: GET
@@ -40,26 +68,22 @@
     body_format: json
   register: details
 
-- name: Save the JSON data related to artifact details into a Variable as a Fact
+- name: Save the JSON data related to artifact metadata into a Variable as a Fact
   set_fact:
     artifactDetails: "{{ details.content | from_json }}"
-
-- name: Exhibit the details pertaining to the latest artifact
-  debug:
-    var: artifactDetails
 
 - name: Extract URI link (location) of latest artifact from artifact details gathered in previous task
   set_fact:
     downloadUrl: "{{ artifactDetails | json_query(jmesquery) }}"
   vars:
     jmesquery: 'downloadUri'
-    
+
 - name: Debug the URI value
   debug: msg=" Newest Artifact Link => {{ downloadUrl }} ."
-
+   
 - name: Download the latest artifact uploaded into artifactory repository
   get_url:
     url: "{{ downloadUrl }}"
-    dest: "{{ base_dir }}/{{ project_name }}/{{ sub_dir }}/ConferenceRoomCapstoneB35.war"
+    dest: "{{ base_dir }}/{{ project_name }}/{{ dl_dir }}/ConferenceRoomCapstoneB35.war"
     url_username: admin
     url_password: Feb@2021
