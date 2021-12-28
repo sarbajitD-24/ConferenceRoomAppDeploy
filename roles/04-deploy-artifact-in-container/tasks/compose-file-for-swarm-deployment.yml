@@ -1,0 +1,9 @@
+---
+- name: Deploy stack in Swarm Cluster (Application Instance)
+  community.docker.docker_stack:
+    name: devops
+    state: present
+    compose:
+    - "{{ compose_file_location }}/docker-compose.yml"
+    # or
+    # "{{ base_dir }}/{{ project_name }}/{{ sub_dir }}/docker-compose.yml"
